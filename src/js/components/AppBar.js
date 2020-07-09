@@ -1,9 +1,8 @@
-export default class AppBar extends HTMLElement{
+export default class AppBar extends HTMLElement {
+  constructor() {
+    super();
 
-    constructor() {
-        super();
-
-        this.innerHTML = `
+    this.innerHTML = `
                 <nav>
                 <div class="nav-wrapper">
                     <a href="#" data-target="slide-out" class="sidenav-trigger">☰</span></a>
@@ -23,20 +22,15 @@ export default class AppBar extends HTMLElement{
                     <li><a class="subheader">Subheader</a></li>
                     <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
                 </ul>
-            `
-    }
+            `;
+  }
 
-    connectedCallback() {
+  connectedCallback() {
+    document.addEventListener("DOMContentLoaded", function () {
+      let elems = document.querySelectorAll(".sidenav");
+      M.Sidenav.init(elems);
+    });
+  }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            let elems = document.querySelectorAll('.sidenav')
-            M.Sidenav.init(elems)
-        })
-
-    }
-
-    disconnectedCallback() {
-
-    }
-
+  disconnectedCallback() {}
 }
