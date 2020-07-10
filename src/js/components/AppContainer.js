@@ -11,7 +11,6 @@ customElements.define("page-not-found", NotFoundPage);
 export default class AppContainer extends HTMLElement {
   constructor() {
     super();
-    this.page = "home";
 
     // Initialize pages
     this.pages = {
@@ -20,10 +19,21 @@ export default class AppContainer extends HTMLElement {
       club: new ClubPage(),
       "404": new NotFoundPage(),
     };
+
+    // Get page from current url
+    let url = window.location.pathname.split("/")[1];
+
+    if (url != "") {
+      this.page = url;
+    } else {
+      this.page = "home";
+    }
   }
 
   connectedCallback() {
     // if page is not set, load dashboard
+
+    console.log(this.page);
     this.displayPage(this.page);
 
     // Handle page changes
