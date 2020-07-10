@@ -2,11 +2,18 @@
   display: none;
 }
 
+league-standings {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
+
 standing-item {
   background-color: #ccc;
   display: block;
   padding: 20px;
   border-radius: 4px;
+  margin: 1em;
 }
 
 standing-item img {
