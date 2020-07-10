@@ -1,4 +1,5 @@
-import HomePage from "../pages/HomePage";
+import HomePage from "js/pages/Home";
+import HomePageHtml from "html/layouts/home.html";
 
 customElements.define("home-page", HomePage);
 
@@ -22,6 +23,6 @@ export default class AppContainer extends HTMLElement {
     this.innerHTML = "";
 
     // Load page into container
-    this.innerHTML = "<home-page></home-page>";
+    this.innerHTML = HomePageHtml;
   }
 }
