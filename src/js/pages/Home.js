@@ -13,15 +13,5 @@ export default class HomePage extends HTMLElement {
     this.registered = false;
   }
 
-  connectedCallback() {
-    this.toggleRegister();
-  }
-
-  toggleRegister() {
-    if (this.registered) {
-      this.querySelector("#registered").classList.toggle("d-none");
-    } else {
-      this.querySelector("#not-registered").classList.toggle("d-none");
-    }
-  }
+  connectedCallback() {}
 }

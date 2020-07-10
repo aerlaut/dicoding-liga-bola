@@ -1,3 +1,14 @@
 .d-none {
   display: none;
 }
+
+standing-item {
+  background-color: #ccc;
+  display: block;
+  padding: 20px;
+  border-radius: 4px;
+}
+
+standing-item img {
+  width: 80px;
+}
