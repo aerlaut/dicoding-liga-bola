@@ -1,8 +1,27 @@
+import HomePage from "../pages/HomePage";
+
+customElements.define("home-page", HomePage);
+
 export default class AppContainer extends HTMLElement {
   constructor() {
     super();
+
+    if (this.page == null) {
+      this.page = "dashboard";
+    }
   }
+
   connectedCallback() {
-    // Load
+    // if page is not set, load dashboard
+    this.displayPage(this.page);
+  }
+
+  // Route according to the page
+  displayPage(page) {
+    // Erase page and show loading spinner
+    this.innerHTML = "";
+
+    // Load page into container
+    this.innerHTML = "<home-page></home-page>";
   }
 }
