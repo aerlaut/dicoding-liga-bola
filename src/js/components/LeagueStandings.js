@@ -1,8 +1,6 @@
-import LeagueStandingsHtml from "html/containers/league-standings.html";
-
 import StandingItem from "js/components/StandingItem";
 
-customElements.define("standing-item", StandingItem);
+customElements.define("league-standing", StandingItem);
 
 export default class LeagueStandings extends HTMLElement {
   constructor() {

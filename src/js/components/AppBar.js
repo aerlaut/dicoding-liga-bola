@@ -22,8 +22,6 @@ export default class AppBar extends HTMLElement {
       link.addEventListener("click", (e) => {
         e.preventDefault();
 
-        console.log(e.target.href);
-
         // Push URL and manuall trigger popstate
         history.pushState({}, null, e.target.href);
         this.appContainer.dispatchEvent(

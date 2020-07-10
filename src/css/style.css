@@ -8,7 +8,7 @@ league-standings {
   flex-wrap: wrap;
 }
 
-standing-item {
+league-standing {
   background-color: #ccc;
   display: block;
   padding: 20px;
@@ -16,6 +16,6 @@ standing-item {
   margin: 0.5em;
 }
 
-standing-item img {
+league-standing img {
   width: 80px;
 }
