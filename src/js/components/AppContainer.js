@@ -11,6 +11,15 @@ export default class AppContainer extends HTMLElement {
   connectedCallback() {
     // if page is not set, load dashboard
     this.displayPage(this.page);
+
+    // Handle page changes
+    this.addEventListener(
+      "navigate",
+      (e) => {
+        console.log(e.detail);
+      },
+      false
+    );
   }
 
   // Route according to the page

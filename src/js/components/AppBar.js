@@ -4,6 +4,8 @@ export default class AppBar extends HTMLElement {
   constructor() {
     super();
     this.innerHTML = AppBarHtml;
+
+    this.appContainer = document.querySelector("app-container");
   }
 
   connectedCallback() {
@@ -17,10 +19,16 @@ export default class AppBar extends HTMLElement {
     const links = document.querySelectorAll(".navigation a");
 
     links.forEach((link) => {
-      link.addEventListener("click", function (e) {
+      link.addEventListener("click", (e) => {
         e.preventDefault();
 
-        history.pushState(null, null, e.target.href);
+        console.log(e.target.href);
+
+        // Push URL and manuall trigger popstate
+        history.pushState({}, null, e.target.href);
+        this.appContainer.dispatchEvent(
+          new CustomEvent("navigate", { detail: e.target.href })
+        );
       });
     });
   }
