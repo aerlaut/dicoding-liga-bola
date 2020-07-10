@@ -10,9 +10,18 @@ export default class HomePage extends HTMLElement {
 
     // Fetch home page template
     this.innerHTML = HomePageHtml;
+    this.registered = false;
   }
 
   connectedCallback() {
-    // Load home page
+    this.toggleRegister();
+  }
+
+  toggleRegister() {
+    if (this.registered) {
+      this.querySelector("#registered").classList.toggle("d-none");
+    } else {
+      this.querySelector("#not-registered").classList.toggle("d-none");
+    }
   }
 }
