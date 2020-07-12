@@ -4,6 +4,9 @@ export default class SettingsPage extends HTMLElement {
   constructor() {
     super()
 
+    this.teams = {}
+    this.teamSelect = null
+
     this.data = {
       options: {
         leagues: [
@@ -32,7 +35,7 @@ export default class SettingsPage extends HTMLElement {
             name: 'Liga Perancis',
           },
         ],
-        clubs: {
+        teams: {
           2001: [
             {
               id: 1,
@@ -80,9 +83,17 @@ export default class SettingsPage extends HTMLElement {
     }
 
     this.innerHTML = SettingsPageLayout
+
+    // Initialize event listeners
+    this.initializeLeagueSelect()
   }
 
   connectedCallback() {
+    this.initializeButtons()
+  }
+
+  // Initialize league select
+  initializeLeagueSelect() {
     // Append options to select
     const leagueSelect = this.querySelector('#league-select')
 
@@ -93,17 +104,17 @@ export default class SettingsPage extends HTMLElement {
 
     leagueSelect.innerHTML = leagueOptions
 
-    // Populate clubSelect with first values
-    const clubSelect = this.querySelector('#club-select')
+    // Populate teamSelect with first values
+    this.teamSelect = this.querySelector('#team-select')
     let firstLeague = this.data.options.leagues[0]
-    let clubs = this.data.options.clubs[firstLeague.id]
+    let teams = this.data.options.teams[firstLeague.id]
 
-    let clubOptions = ''
-    clubs.forEach((c) => {
-      clubOptions += `<option value="${c.id}">${c.name}</option>`
+    let teamOptions = ''
+    teams.forEach((c) => {
+      teamOptions += `<option value="${c.id}">${c.name}</option>`
     })
 
-    clubSelect.innerHTML = clubOptions
+    this.teamSelect.innerHTML = teamOptions
 
     // Initialize select fields
     document.addEventListener('DOMContentLoaded', function () {
@@ -111,19 +122,33 @@ export default class SettingsPage extends HTMLElement {
       M.FormSelect.init(elems)
     })
 
-    // Populate club team when a league is chosen
+    // Populate team team when a league is chosen
     leagueSelect.addEventListener('change', (e) => {
-      let clubs = this.data.options.clubs[e.target.value]
+      let teams = this.data.options.teams[e.target.value]
 
-      let clubOptions = ''
-      clubs.forEach((c) => {
-        clubOptions += `<option value="${c.id}">${c.name}</option>`
+      let teamOptions = ''
+      teams.forEach((c) => {
+        teamOptions += `<option value="${c.id}">${c.name}</option>`
       })
 
-      clubSelect.innerHTML = clubOptions
+      teamSelect.innerHTML = teamOptions
 
-      // Reinitialize clubSelect
-      M.FormSelect.init(clubSelect)
+      // Reinitialize teamSelect
+      M.FormSelect.init(teamSelect)
+    })
+  }
+
+  initializeButtons() {
+    // Add watcher to add team
+    const AddTeamButton = this.querySelector('#add-team')
+
+    AddTeamButton.addEventListener('click', (e) => {
+      // Add team if not in this.teams
+
+      let teamId = this.teamSelect.value
+      if (!this.teams.hasOwnProperty(teamId)) {
+        this.teams[teamId] = this.data.options.teams[teamId]
+      }
     })
   }
 }

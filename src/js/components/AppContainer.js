@@ -31,7 +31,7 @@ export default class AppContainer extends HTMLElement {
   }
 
   connectedCallback() {
-    // if page is not set, load dashboard
+    // if page is not set, load dashboard 
     this.displayPage(this.page)
 
     // Handle page changes
