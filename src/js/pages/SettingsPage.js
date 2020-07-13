@@ -5,7 +5,8 @@ export default class SettingsPage extends HTMLElement {
   constructor() {
     super();
 
-    this.teams = {};
+    this.teamsSelection = [];
+    this.followedTeams = {};
     this.teamSelect = null;
 
     this.data = {
@@ -84,9 +85,13 @@ export default class SettingsPage extends HTMLElement {
           return false;
         }
 
+        // Local copy
+        this.teamsSelection = res.teams;
+
+        // Insert options
         let teamOptions = "";
-        res.teams.forEach((team) => {
-          teamOptions += `<option value="${team.id}">${team.name}</option>`;
+        this.teamsSelection.forEach((team, id) => {
+          teamOptions += `<option value="${id}">${team.name}</option>`;
         });
 
         this.teamSelect.innerHTML = teamOptions;
@@ -102,11 +107,17 @@ export default class SettingsPage extends HTMLElement {
     const AddTeamButton = this.querySelector("#add-team");
 
     AddTeamButton.addEventListener("click", (e) => {
-      // Add team if not in this.teams
-      let teamId = this.teamSelect.value;
-      if (!this.teams.hasOwnProperty(teamId)) {
-        this.teams[teamId] = this.data.options.teams[teamId];
+      // Add team if not in this.followedTeams
+      let idxNo = this.teamSelect.value;
+      let selected = this.teamsSelection[idxNo];
+
+      if (!this.followedTeams.hasOwnProperty(selected.id)) {
+        this.followedTeams[selected.id] = this.teamsSelection[idxNo];
       }
+
+      showFollowedTeams();
     });
   }
+
+  // Show followed teams
 }
