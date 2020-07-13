@@ -86,7 +86,7 @@ export default class SettingsPage extends HTMLElement {
 
   // Initialize follow buttons
   initButtons() {
-    // Add watcher to add team
+    // Add eventlistener to add button
     const AddTeamButton = this.querySelector("#add-team");
 
     AddTeamButton.addEventListener("click", (e) => {
@@ -105,6 +105,25 @@ export default class SettingsPage extends HTMLElement {
         // Update teams pages
         this.showFollowedTeams();
       }
+    });
+
+    // Attaching event listener
+    const DeleteTeams = this.querySelectorAll(".remove-team");
+
+    DeleteTeams.forEach((button) => {
+      initRemoveButton(button);
+    });
+  }
+
+  // Init remove buttons
+  initRemoveButton(el) {
+    // Store class object in a temp variable
+    let obj = this;
+
+    el.addEventListener("click", function (e) {
+      delete obj.followedTeams[e.target.getAttribute("data-team-id")];
+      console.log(obj.followedTeams);
+      this.parentNode.removeChild(this);
     });
   }
 
@@ -152,12 +171,21 @@ export default class SettingsPage extends HTMLElement {
             alt="${team.name}"
             class="circle"
           />
-          <span class="team-title">${team.name}</span>
+          <strong class="team-title">${team.name}</strong>
+          <a class="btn red darken-4 text-white remove-team right" data-team-id="${team.id}">X</a>
           <p class="team-league">${team.leagueName}</p>
         </li>
       `;
 
+      this.initRemoveButton(insert);
+
       this.followedTeamsList.append(insert);
     });
+  }
+
+  removeTeam(team_id) {
+    if (this.followedTeams.hasOwnProperty(team_id)) {
+      delete this.followedTeams[team_id];
+    }
   }
 }
