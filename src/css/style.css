@@ -19,3 +19,10 @@ league-standing {
 league-standing img {
   width: 80px;
 }
+
+/* Settings page */
+#followed-teams img {
+  width: 50px;
+  vertical-align: middle;
+  border-radius: 0%;
+}

@@ -5,8 +5,10 @@ export default class SettingsPage extends HTMLElement {
   constructor() {
     super();
 
+    // Init object props
     this.teamsSelection = [];
     this.followedTeams = {};
+    this.leagueSelect = null;
     this.teamSelect = null;
 
     this.data = {
@@ -37,26 +39,26 @@ export default class SettingsPage extends HTMLElement {
     };
 
     this.innerHTML = SettingsPageLayout;
-
-    // Initialize event listeners
-    this.initializeLeagueSelect();
   }
 
   connectedCallback() {
-    this.initializeButtons();
+    // Initialize event listeners
+    this.initLeagueSelect();
+    this.initButtons();
+    this.initFollowedTeams();
   }
 
   // Initialize league select
-  initializeLeagueSelect() {
+  initLeagueSelect() {
     // Append options to select
-    const leagueSelect = this.querySelector("#league-select");
+    this.leagueSelect = this.querySelector("#league-select");
 
     let leagueOptions = "";
     this.data.options.leagues.forEach((e) => {
       leagueOptions += `<option value="${e.id}">${e.name}</option>`;
     });
 
-    leagueSelect.innerHTML = leagueOptions;
+    this.leagueSelect.innerHTML = leagueOptions;
 
     // Populate teamSelect with first values
     this.teamSelect = this.querySelector("#team-select");
@@ -71,12 +73,42 @@ export default class SettingsPage extends HTMLElement {
     });
 
     // Populate team team when a league is chosen
-    leagueSelect.addEventListener("change", (e) => {
+    this.leagueSelect.addEventListener("change", (e) => {
       // Get teams in league
       this.loadTeams(e.target.value);
     });
   }
 
+  // Initialize followed teams
+  initFollowedTeams() {
+    this.followedTeamsList = this.querySelector("#followed-teams-list");
+  }
+
+  // Initialize follow buttons
+  initButtons() {
+    // Add watcher to add team
+    const AddTeamButton = this.querySelector("#add-team");
+
+    AddTeamButton.addEventListener("click", (e) => {
+      // Add team if not in this.followedTeams
+      let idxNo = this.teamSelect.value;
+
+      let selected = this.teamsSelection[idxNo];
+      let leagueName = this.leagueSelect.options[
+        this.leagueSelect.selectedIndex
+      ].text;
+
+      if (!this.followedTeams.hasOwnProperty(selected.id)) {
+        this.followedTeams[selected.id] = selected;
+        this.followedTeams[selected.id].leagueName = leagueName;
+
+        // Update teams pages
+        this.showFollowedTeams();
+      }
+    });
+  }
+
+  // Load team
   loadTeams(league_id) {
     getLeagueTeams(league_id)
       .then((res) => res.json())
@@ -102,22 +134,30 @@ export default class SettingsPage extends HTMLElement {
       .catch((err) => console.log(err));
   }
 
-  initializeButtons() {
-    // Add watcher to add team
-    const AddTeamButton = this.querySelector("#add-team");
+  // Show followed teams
+  showFollowedTeams() {
+    // Empty teams list
+    this.followedTeamsList.innerHTML = "";
 
-    AddTeamButton.addEventListener("click", (e) => {
-      // Add team if not in this.followedTeams
-      let idxNo = this.teamSelect.value;
-      let selected = this.teamsSelection[idxNo];
+    Object.keys(this.followedTeams).forEach((team) => {
+      team = this.followedTeams[team];
 
-      if (!this.followedTeams.hasOwnProperty(selected.id)) {
-        this.followedTeams[selected.id] = this.teamsSelection[idxNo];
-      }
+      let insert = document.createElement("li");
+      insert.classList.add("collection-item", "avatar");
 
-      showFollowedTeams();
+      insert.innerHTML = `
+        <li class="">
+          <img
+            src="${team.crestUrl}"
+            alt="${team.name}"
+            class="circle"
+          />
+          <span class="team-title">${team.name}</span>
+          <p class="team-league">${team.leagueName}</p>
+        </li>
+      `;
+
+      this.followedTeamsList.append(insert);
     });
   }
-
-  // Show followed teams
 }
