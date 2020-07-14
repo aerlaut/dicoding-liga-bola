@@ -5,11 +5,6 @@ if (!("indexedDB" in window)) {
 }
 
 class DB {
-  // class parameters
-  db;
-  store;
-  tx;
-
   constructor(options) {
     if (!options.objectStoreName) {
       console.error("no object store");

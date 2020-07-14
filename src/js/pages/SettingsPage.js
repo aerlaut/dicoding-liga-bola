@@ -48,7 +48,7 @@ export default class SettingsPage extends HTMLElement {
     this.initButtons();
     this.initFollowedTeams();
   }
--
+
   // Initialize league select
   initLeagueSelect() {
     // Append options to select
