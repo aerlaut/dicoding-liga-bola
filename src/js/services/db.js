@@ -28,7 +28,7 @@ class DB {
       },
     });
 
-    return await db.transaction(obj.objectStoreName, "readwrite");
+    return db.transaction(obj.objectStoreName, "readwrite");
   }
 
   async fetch(id) {
