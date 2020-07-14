@@ -9,56 +9,68 @@ class DB {
     if (!options.objectStoreName) {
       console.error("no object store");
       return false;
+    } else {
+      // Get objectStore
+      this.objectStoreName = options.objectStoreName
+        ? options.objectStoreName
+        : "";
     }
+  }
 
+  async connect() {
     // Create DB
-    this.db = openDB(name, 1, {
+    let obj = this;
+    let db = await openDB("liga-bola-db", 1, {
       upgrade(db) {
-        if (!db.objectStoreNames.contains(options.objectStoreName)) {
-          db.createObjectStore(options.objectStoreName, { keyPath: "id" });
+        if (!db.objectStoreNames.contains(obj.objectStoreName)) {
+          db.createObjectStore(obj.objectStoreName, { keyPath: "id" });
         }
       },
     });
 
-    // Get objectStore
-    this.objectStoreName = options.objectStoreName
-      ? options.objectStoreName
-      : "";
-
-    this.tx = this.db.transaction(options.objectStoreName, "readwrite");
-    this.store = tx.objectStore(options.objectStore);
+    return await db.transaction(obj.objectStoreName, "readwrite");
   }
 
   async fetch(id) {
-    this.store.get(id);
+    let tx = await this.connect();
+    return tx.store.get(id);
   }
 
   async fetchAll() {
-    this.store.getAll();
+    let tx = await this.connect();
+    return tx.store.getAll();
   }
 
   async insert(payload) {
-    this.store.add(payload);
-    return this.tx.complete;
+    let tx = await this.connect();
+    tx.store.add(payload);
+    return tx.complete;
   }
 
   async update(payload) {
-    this.store.put(payload);
-    return this.tx.complete;
+    let tx = await this.connect();
+    tx.store.put(payload);
+    return tx.complete;
   }
 }
 
 // Define implementations of the DB
-class teamDB extends DB {
+class TeamDB extends DB {
   constructor() {
     super({ objectStoreName: "team" });
   }
 }
 
-class leagueDB extends DB {
+class LeagueDB extends DB {
   constructor() {
     super({ objectStoreName: "league" });
   }
 }
 
-export { teamDB, leagueDB };
+class UserDB extends DB {
+  constructor() {
+    super({ objectStoreName: "user" });
+  }
+}
+
+export { TeamDB, LeagueDB, UserDB };

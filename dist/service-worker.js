@@ -22,8 +22,6 @@ self.addEventListener("fetch", (e) => {
       caches.open(CACHE_NAME).then((cache) => {
         return cache.match(e.request).then((res) => {
           let netResult = fetch(e.request).then((netResp) => {
-            console.log("image cached");
-
             cache.put(e.request, netResp.clone());
             return netResp;
           });
