@@ -1,5 +1,6 @@
 import SettingsPageLayout from "html/layouts/settings.html";
 import { getLeagueTeams } from "js/services/api";
+import db from "js/services/db";
 
 export default class SettingsPage extends HTMLElement {
   constructor() {
@@ -47,7 +48,7 @@ export default class SettingsPage extends HTMLElement {
     this.initButtons();
     this.initFollowedTeams();
   }
-
+-
   // Initialize league select
   initLeagueSelect() {
     // Append options to select
@@ -89,29 +90,37 @@ export default class SettingsPage extends HTMLElement {
     // Add eventlistener to add button
     const AddTeamButton = this.querySelector("#add-team");
 
-    AddTeamButton.addEventListener("click", (e) => {
-      // Add team if not in this.followedTeams
-      let idxNo = this.teamSelect.value;
-
-      let selected = this.teamsSelection[idxNo];
-      let leagueName = this.leagueSelect.options[
-        this.leagueSelect.selectedIndex
-      ].text;
-
-      if (!this.followedTeams.hasOwnProperty(selected.id)) {
-        this.followedTeams[selected.id] = selected;
-        this.followedTeams[selected.id].leagueName = leagueName;
-
-        // Update teams pages
-        this.showFollowedTeams();
-      }
-    });
+    this.initAddTeamButton(AddTeamButton);
 
     // Attaching event listener
-    const DeleteTeams = this.querySelectorAll(".remove-team");
+    const DeleteTeamButtons = this.querySelectorAll(".remove-team");
 
-    DeleteTeams.forEach((button) => {
+    DeleteTeamButtons.forEach((button) => {
       initRemoveButton(button);
+    });
+  }
+
+  initAddTeamButton(el) {
+    // Store class object in a temp variable
+    let obj = this;
+
+    el.addEventListener("click", (e) => {
+      // Add team if not in this.followedTeams
+      let idxNo = obj.teamSelect.value;
+
+      let selected = obj.teamsSelection[idxNo];
+      let leagueName =
+        obj.leagueSelect.options[obj.leagueSelect.selectedIndex].text;
+
+      if (!obj.followedTeams.hasOwnProperty(selected.id)) {
+        obj.followedTeams[selected.id] = selected;
+        obj.followedTeams[selected.id].leagueName = leagueName;
+
+        // Update teams pages
+        obj.showFollowedTeams();
+
+        // Update record in indexed DB
+      }
     });
   }
 
