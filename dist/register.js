@@ -2,7 +2,7 @@
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () {
     navigator.serviceWorker
-      .register("assets/sw/service-worker.js")
+      .register("/service-worker.js", { scope: "/" })
       .then((reg) => {
         console.log("Registration successfull with scope : ", reg.scope);
       })
