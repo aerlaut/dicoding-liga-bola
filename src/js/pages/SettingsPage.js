@@ -1,6 +1,6 @@
 import SettingsPageLayout from "html/layouts/settings.html";
 import { getLeagueTeams } from "js/services/api";
-import db from "js/services/db";
+import { leagueDB, teamDB } from "js/services/db";
 
 export default class SettingsPage extends HTMLElement {
   constructor() {
