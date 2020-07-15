@@ -1,5 +1,5 @@
 import SettingsPageLayout from "html/layouts/settings.html";
-import { getLeagueTeams } from "js/services/api";
+import { fetchData } from "js/services/api";
 import { LeagueDB, TeamDB, UserDB } from "js/services/db";
 
 export default class SettingsPage extends HTMLElement {
@@ -152,8 +152,8 @@ export default class SettingsPage extends HTMLElement {
   }
 
   // Load team
-  loadTeams(league_id) {
-    getLeagueTeams(league_id)
+  loadTeams(leagueId) {
+    fetchData(`competitions/${leagueId}/teams`)
       .then((res) => res.json())
       .then((res) => {
         if (res.count == 0) {

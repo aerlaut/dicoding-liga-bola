@@ -13,5 +13,8 @@ export default class HomePage extends HTMLElement {
     this.registered = false;
   }
 
-  connectedCallback() {}
+  connectedCallback() {
+    let standing = new LeagueStandings(2021);
+    this.querySelector("#standings-container").append(standing);
+  }
 }
