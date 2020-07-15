@@ -2,7 +2,7 @@ import { flatten } from "flat";
 
 import StandingItem from "html/templates/standing-item.html";
 
-export default class LeagueStandings extends HTMLElement {
+export default class LeagueStandings extends HTMLTableRowElement {
   constructor(team) {
     super();
 
@@ -10,7 +10,7 @@ export default class LeagueStandings extends HTMLElement {
     this.data = team != null ? team : null;
     this.innerHTML = StandingItem;
 
-    this.classList.add("collection-item", "avatar");
+    this.classList.add("standing-item");
   }
 
   connectedCallback() {
