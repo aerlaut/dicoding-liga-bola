@@ -9,7 +9,7 @@ export default class LeagueStandings extends HTMLTableElement {
     super();
 
     // if leagueId not set, use default 'English Premier League id 2021'
-    this.leagueId = leagueId == null ? leagueId : 2021;
+    this.leagueId = leagueId == null ? 2021 : leagueId;
     this.classList.add("league-standings");
     this.innerHTML = `
       <thead>

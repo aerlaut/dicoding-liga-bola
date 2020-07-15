@@ -1,7 +1,6 @@
 import HomePageHtml from "html/layouts/home.html";
 
 import LeagueStandings from "js/components/LeagueStandings";
-import { fetchData } from "js/services/api";
 import { UserDB } from "js/services/db";
 
 customElements.define("league-standings", LeagueStandings, {
@@ -14,22 +13,50 @@ export default class HomePage extends HTMLElement {
 
     // Fetch home page template
     this.innerHTML = HomePageHtml;
-    this.registered = false;
   }
 
   connectedCallback() {
-    let standing = new LeagueStandings(2021);
-    this.querySelector(".standings-container").append(standing);
-
-    this.getLeagueStandings();
+    this.getUserDashboard(1);
   }
 
   getLeagueStandings() {
+    // get league ids followed by user
+    let followedLeagues = Object.keys(this.user.leagues);
+
+    let standings = this.querySelector("#standings");
+
+    console.log(followedLeagues);
+
+    // Get league and append
+    followedLeagues.forEach((leagueId) => {
+      console.log(leagueId);
+      let container = document.createElement("div");
+      container.classList.add("col", "s12", "standings-container");
+      container.append(new LeagueStandings(leagueId));
+      standings.append(container);
+    });
+  }
+
+  getUserDashboard(userId) {
     let userConn = new UserDB();
     userConn
-      .fetch(1)
+      .fetch(userId)
       .then((res) => {
-        console.log(res);
+        this.user = res;
+
+        if (Object.keys(this.user.teams).length > 0) {
+          this.getLeagueStandings();
+        } else {
+          if (!this.registered) {
+            this.querySelector(
+              "standings"
+            ).innerHTML = `<p class="text-center">Belum ada liga yang diikuti. <a href="/settings">Ikuti tim</a></p>`;
+
+            this.querySelector(
+              "team-standings"
+            ).innerHTML = `<p class="text-center">Belum ada liga yang diikuti. <a href="/settings">Ikuti tim</a></p>`;
+          }
+        }
       })
       .catch((err) => console.log(err));
   }
