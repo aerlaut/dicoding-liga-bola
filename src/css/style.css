@@ -3,6 +3,11 @@ nav {
 }
 
 /* Home page */
+.team-item {
+  background-repeat: no-repeat;
+  background-position: -15%;
+}
+
 .team-item img {
   width: 50px;
   display: inline-block;
