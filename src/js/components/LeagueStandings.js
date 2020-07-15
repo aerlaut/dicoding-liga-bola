@@ -37,7 +37,7 @@ export default class LeagueStandings extends HTMLTableElement {
         let tbody = this.querySelector("tbody");
 
         // Load standings
-        res.standings[0].table.forEach((d) => {
+        res.standings[0].table.slice(0, 5).forEach((d) => {
           tbody.append(new StandingItem(d));
         });
       });

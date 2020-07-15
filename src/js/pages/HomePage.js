@@ -1,10 +1,15 @@
 import HomePageHtml from "html/layouts/home.html";
 
 import LeagueStandings from "js/components/LeagueStandings";
+import TeamItem from "js/components/TeamItem";
 import { UserDB } from "js/services/db";
 
 customElements.define("league-standings", LeagueStandings, {
   extends: "table",
+});
+
+customElements.define("team-item", TeamItem, {
+  extends: "div",
 });
 
 export default class HomePage extends HTMLElement {
@@ -19,19 +24,46 @@ export default class HomePage extends HTMLElement {
     this.getUserDashboard(1);
   }
 
+  getTeamStandings() {
+    // get league ids followed by user
+    let followedTeams = Object.values(this.user.teams);
+    let standings = this.querySelector("#team-standings");
+
+    if (followedTeams.length == 0) {
+      standings.innerHTML = `<p class="text-center">Belum ada tim yang diikuti. <a href="/settings">Ikuti tim</a></p>`;
+      return;
+    }
+
+    // Get league and append
+    followedTeams.forEach((team) => {
+      standings.append(new TeamItem(team));
+    });
+  }
+
   getLeagueStandings() {
     // get league ids followed by user
     let followedLeagues = Object.keys(this.user.leagues);
 
-    let standings = this.querySelector("#standings");
+    if (followedLeagues.length == 0) {
+      this.querySelector(
+        "standings"
+      ).innerHTML = `<p class="text-center">Belum ada liga yang diikuti. <a href="/settings">Ikuti tim</a></p>`;
+      return;
+    }
 
-    console.log(followedLeagues);
+    let standings = this.querySelector("#standings");
 
     // Get league and append
     followedLeagues.forEach((leagueId) => {
-      console.log(leagueId);
       let container = document.createElement("div");
-      container.classList.add("col", "s12", "standings-container");
+      container.classList.add(
+        "col",
+        "s12",
+        "standings-container",
+        "card-panel",
+        "p-4"
+      );
+
       container.append(new LeagueStandings(leagueId));
       standings.append(container);
     });
@@ -44,19 +76,8 @@ export default class HomePage extends HTMLElement {
       .then((res) => {
         this.user = res;
 
-        if (Object.keys(this.user.teams).length > 0) {
-          this.getLeagueStandings();
-        } else {
-          if (!this.registered) {
-            this.querySelector(
-              "standings"
-            ).innerHTML = `<p class="text-center">Belum ada liga yang diikuti. <a href="/settings">Ikuti tim</a></p>`;
-
-            this.querySelector(
-              "team-standings"
-            ).innerHTML = `<p class="text-center">Belum ada liga yang diikuti. <a href="/settings">Ikuti tim</a></p>`;
-          }
-        }
+        // this.getLeagueStandings();
+        this.getTeamStandings();
       })
       .catch((err) => console.log(err));
   }

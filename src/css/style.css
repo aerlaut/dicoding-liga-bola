@@ -3,10 +3,10 @@ nav {
 }
 
 /* Home page */
-
-.standings-container {
-  height: 300px;
-  overflow-y: scroll;
+.team-item img {
+  width: 50px;
+  display: inline-block;
+  margin-right: 20px;
 }
 
 .standing-item img {
