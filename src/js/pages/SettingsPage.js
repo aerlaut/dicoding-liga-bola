@@ -7,7 +7,7 @@ export default class SettingsPage extends HTMLElement {
     super();
 
     // Init object props
-    this.teamsSelection = [];
+    this.leage = null;
     this.leagueSelect = null;
     this.teamSelect = null;
     this.user = null;
@@ -87,9 +87,9 @@ export default class SettingsPage extends HTMLElement {
     AddTeamButton.addEventListener("click", (e) => {
       // Add team if not in this.followedTeams
       let idxNo = obj.teamSelect.value;
-      let team = obj.teamsSelection[idxNo];
-      let leagueName = (team.leagueName =
-        obj.leagueSelect.options[obj.leagueSelect.selectedIndex].text);
+      let team = obj.league.teams[idxNo];
+      team.leagueName =
+        obj.leagueSelect.options[obj.leagueSelect.selectedIndex].text;
       team.leagueId =
         obj.leagueSelect.options[obj.leagueSelect.selectedIndex].value;
 
@@ -97,15 +97,14 @@ export default class SettingsPage extends HTMLElement {
     });
 
     // Attaching event listener
-    const DeleteTeamButtons = this.querySelectorAll(".remove-team");
-
-    DeleteTeamButtons.forEach((button) => {
-      button.addEventListener("click", function (e) {
+    this.querySelector("#followed-teams-list").addEventListener(
+      "click",
+      (e) => {
         let teamId = e.target.getAttribute("data-team-id");
         obj.removeTeam(teamId);
-        this.parentNode.removeChild(this);
-      });
-    });
+        e.currentTarget.removeChild(e.target.parentNode);
+      }
+    );
   }
 
   // Get user settings
@@ -120,6 +119,7 @@ export default class SettingsPage extends HTMLElement {
           id: 1,
           user: "user",
           teams: {},
+          leagues: {},
         };
 
         this.userConn.insert(newUser);
@@ -136,6 +136,15 @@ export default class SettingsPage extends HTMLElement {
     if (!this.user.teams.hasOwnProperty(team.id)) {
       this.user.teams[team.id] = team;
 
+      // Increment followed league counter
+      let leagueId = this.league.competition.id;
+      if (this.user.leagues.hasOwnProperty(leagueId)) {
+        this.user.leagues[leagueId] += 1;
+      } else {
+        // or initialize
+        this.user.leagues[leagueId] = 1;
+      }
+
       // Update teams pages
       this.showFollowedTeams();
 
@@ -146,7 +155,16 @@ export default class SettingsPage extends HTMLElement {
 
   removeTeam(teamId) {
     if (this.user.teams.hasOwnProperty(teamId)) {
-      delete this.user.teams[team_id];
+      let leagueId = this.user.teams[teamId].leagueId;
+      delete this.user.teams[teamId];
+
+      // Decrement league count, else remove
+      if (this.user.leagues[leagueId] > 1) {
+        this.user.leagues[leagueId] -= 1;
+      } else {
+        delete this.user.leagues[leagueId];
+      }
+
       this.userConn.update(this.user);
     }
   }
@@ -161,11 +179,11 @@ export default class SettingsPage extends HTMLElement {
         }
 
         // Local copy
-        this.teamsSelection = res.teams;
+        this.league = res;
 
         // Insert options
         let teamOptions = "";
-        this.teamsSelection.forEach((team, id) => {
+        this.league.teams.forEach((team, id) => {
           teamOptions += `<option value="${id}">${team.name}</option>`;
         });
 
@@ -197,13 +215,6 @@ export default class SettingsPage extends HTMLElement {
           <a class="btn red darken-4 text-white remove-team right" data-team-id="${team.id}">X</a>
           <p class="team-league">${team.leagueName}</p>
       `;
-
-      let removeButton = teamItem.querySelector(".remove-team");
-      removeButton.addEventListener("click", (e) => {
-        let teamId = e.target.getAttribute("data-team-id");
-        obj.removeTeam(teamId);
-        this.parentNode.removeChild(this);
-      });
 
       this.followedTeamsList.append(teamItem);
     });

@@ -20,8 +20,6 @@ export default class LeagueStandings extends HTMLTableRowElement {
     // Flatten object to facilitate replacement
     let replacement = flatten(this.data);
 
-    console.log(replacement);
-
     Object.keys(replacement).forEach((text) => {
       inner = inner.replace(`{{ ${text} }}`, replacement[text]);
     });

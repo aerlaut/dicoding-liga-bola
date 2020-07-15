@@ -38,7 +38,6 @@ export default class LeagueStandings extends HTMLTableElement {
 
         // Load standings
         res.standings[0].table.forEach((d) => {
-          console.log(d);
           tbody.append(new StandingItem(d));
         });
       });
