@@ -69,12 +69,10 @@ export default class SettingsPage extends HTMLElement {
     this.loadTeams(firstLeague);
 
     // Initialize select fields
-    document.addEventListener("DOMContentLoaded", function () {
-      var elems = document.querySelectorAll("select");
-      M.FormSelect.init(elems);
-    });
+    var elems = document.querySelectorAll("select");
+    M.FormSelect.init(elems);
 
-    // Populate team team when a league is chosen
+    // Populate team when a league is chosen
     this.leagueSelect.addEventListener("change", (e) => {
       // Get teams in league
       this.loadTeams(e.target.value);
