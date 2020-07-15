@@ -40,14 +40,14 @@ export default class SettingsPage extends HTMLElement {
     };
 
     this.innerHTML = SettingsPageLayout;
+    this.followedTeamsList = this.querySelector("#followed-teams-list");
   }
 
   connectedCallback() {
     // Initialize event listeners
     this.initLeagueSelect();
     this.initButtons();
-    this.initFollowedTeams();
-    this.getUserSettings(1);
+    this.loadUserSettings(1);
   }
 
   // Initialize league select
@@ -81,11 +81,6 @@ export default class SettingsPage extends HTMLElement {
     });
   }
 
-  // Initialize followed teams
-  initFollowedTeams() {
-    this.followedTeamsList = this.querySelector("#followed-teams-list");
-  }
-
   // Initialize follow buttons
   initButtons() {
     // Add eventlistener to add button
@@ -116,8 +111,8 @@ export default class SettingsPage extends HTMLElement {
   }
 
   // Get user settings
-  getUserSettings(id) {
-    // Create new UserDB instance
+  loadUserSettings(id) {
+    // Create new UserDB connection instance
     this.userConn = new UserDB();
     this.userConn.fetch(id).then((user) => {
       if (user == null) {
@@ -134,6 +129,7 @@ export default class SettingsPage extends HTMLElement {
       } else {
         // Get current user
         this.user = user;
+        this.showFollowedTeams();
       }
     });
   }
