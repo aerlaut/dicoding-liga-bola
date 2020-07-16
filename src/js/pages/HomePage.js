@@ -94,6 +94,6 @@ export default class HomePage extends HTMLElement {
         // this.getLeagueStandings();
         this.getTeamStandings();
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.err(err));
   }
 }

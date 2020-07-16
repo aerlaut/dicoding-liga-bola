@@ -192,7 +192,7 @@ export default class SettingsPage extends HTMLElement {
         // Reinitialize teamSelect
         M.FormSelect.init(this.teamSelect);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.err(err));
   }
 
   // Show followed teams

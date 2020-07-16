@@ -12,14 +12,6 @@ export default class AppContainer extends HTMLElement {
   constructor() {
     super();
 
-    // Initialize pages
-    this.pages = {
-      home: new HomePage(),
-      settings: new SettingsPage(),
-      team: new TeamPage(),
-      "404": new NotFoundPage(),
-    };
-
     // Get page from current url
     let pathSplit = window.location.pathname.split("/");
     let url = pathSplit[1];
@@ -50,14 +42,26 @@ export default class AppContainer extends HTMLElement {
   }
 
   // Route according to the page
-  displayPage(page) {
+  displayPage(route) {
     this.innerHTML = "";
 
-    if (this.pages.hasOwnProperty(page)) {
-      this.append(this.pages[page]);
-    } else {
-      // 404 Not found
-      this.append(this.pages["404"]);
+    // Switch route
+    let page = null;
+    switch (route) {
+      case "settings":
+        page = new SettingsPage();
+        break;
+      case "team":
+        page = new TeamPage();
+        break;
+      case "home":
+        page = new HomePage();
+        break;
+      default:
+        page = new NotFoundPage();
+        break;
     }
+
+    this.append(page);
   }
 }
