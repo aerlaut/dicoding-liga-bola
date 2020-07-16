@@ -20,6 +20,7 @@ export default class LeagueStandings extends HTMLTableElement {
     this.innerHTML = `
       <thead>
         <tr>
+          <th>Rank</th>
           <th></th>
           <th>Tim</th>
           <th>P</th>

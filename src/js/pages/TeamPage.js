@@ -42,9 +42,8 @@ export default class TeamPage extends HTMLElement {
           this.data.crestUrl
         );
 
-        // this.getStandings();
+        this.getStandings();
         this.getMatches();
-        // this.getSquad();
       })
       .catch((err) => console.error(err));
   }
@@ -79,7 +78,7 @@ export default class TeamPage extends HTMLElement {
 
             standings = table[table.length - 5];
           } else if (position > 3) {
-            standings = table.slice(position - 2, position + 3);
+            standings = table.slice(position - 3, position + 2);
           }
         }
 
@@ -115,9 +114,9 @@ export default class TeamPage extends HTMLElement {
           <table>
             <thead>
             <tr>
-              <th>Home</th>
-              <th></th>
-              <th>Away</th>
+              <th class="text-center">Home</th>
+              <th class="text-center">
+              <th class="text-center">Away</th>
               <th></th>
               <th></th>
               <th></th>
@@ -130,9 +129,9 @@ export default class TeamPage extends HTMLElement {
             console.log(m);
             inner += `
             <tr>
-              <td><a class="team-button" team-id=${m.HomeTeam.id}>${m.HomeTeam.name}</a></td>
+              <td class="text-center"><a class="team-button" team-id=${m.HomeTeam.id}>${m.HomeTeam.name}</a></td>
               <td>VS</td>
-              <td><a class="team-button" team-id=${m.awayTeam.id}>${m.awayTeam.name}</a></td>
+              <td class="text-center"><a class="team-button" team-id=${m.awayTeam.id}>${m.awayTeam.name}</a></td>
               <td>${m.competition.name}</td>
               <td>${m.utcDate}</td>
               <td><button class="btn">+</button></td>
@@ -155,9 +154,11 @@ export default class TeamPage extends HTMLElement {
           <table>
             <thead>
             <tr>
-              <th>Home</th>
+              <th class="text-center">Home</th>
               <th></th>
-              <th>Away</th>
+              <th></th>
+              <th></th>
+              <th class="text-center">Away</th>
               <th></th>
               <th></th>
             </tr>
@@ -175,11 +176,17 @@ export default class TeamPage extends HTMLElement {
 
           inner += `
             <tr class="${winClass}">
-              <td><a class="team-button" team-id=${m.homeTeam.id}>${m.homeTeam.name}</a> ${m.score.fullTime.homeTeam}</td>
-              <td>VS</td>
-              <td>${m.score.fullTime.awayTeam} <a class="team-button" team-id=${m.awayTeam.id}>${m.awayTeam.name}</a></td>
+              <td class="text-center"><a class="team-button" team-id=${
+                m.homeTeam.id
+              }>${m.homeTeam.name}</a></td>
+              <td class="text-center">${m.score.fullTime.homeTeam}</td>
+              <td class="text-center">VS</td>
+              <td class="text-center">${m.score.fullTime.awayTeam}</td>
+              <td class="text-center"><a class="team-button" team-id=${
+                m.awayTeam.id
+              }>${m.awayTeam.name}</a></td>
               <td>${m.competition.name}</td>
-              <td>${m.utcDate}</td>
+              <td>${this.convertToWIB(m.utcDate)}</td>
               </tr>
           `;
         });
@@ -189,31 +196,26 @@ export default class TeamPage extends HTMLElement {
       .catch((err) => console.log(err));
   }
 
-  // Set team data
-  getSquad() {
-    fetchData(`teams/${this.data.id}`)
-      .then((res) => res.json())
-      .then((res) => {
-        let squadContainer = this.querySelector("#current-squad");
-        // Check if squad is empty
-        if (res.squad.length == 0) {
-          squadContainer.innerHTML = `<div class="text-center">Tidak ada data</div>`;
-          return;
-        }
+  convertToWIB(utcDate) {
+    // Convert to minutes
+    utcDate = Date.parse(utcDate);
 
-        // Populate squad
-        res.squad.forEach((player) => {
-          let tmp = `<div class="player-item collection-item">
-                        <span class="shirt-number">${
-                          player.shirtNumber == null ? "" : player.shirtNumber
-                        }</span>
-                        <strong class="name">${player.name}</strong>
-                        <span class="position">${player.position}</span>
-                      </div>`;
+    // Add + 7
+    let newDate = new Date(utcDate + 7 * 60 * 60 * 1000);
 
-          squadContainer.innerHtml += tmp;
-        });
-      })
-      .catch((err) => console.log(err));
+    let year = newDate.getFullYear();
+    let month = (newDate.getMonth() + 1).toString();
+    month = month.length < 2 ? "0" + month : month;
+
+    let date = newDate.getDate().toString();
+    date = date.length < 2 ? "0" + date : date;
+
+    let hour = ((newDate.getHours() + 24) % 12 || 12).toString();
+    hour = hour.length < 2 ? "0" + hour : hour;
+
+    let minute = newDate.getMinutes().toString();
+    minute = minute.length < 2 ? "0" + minute : minute;
+
+    return `${year}-${month}-${date} ${hour}:${minute} WIB`;
   }
 }
