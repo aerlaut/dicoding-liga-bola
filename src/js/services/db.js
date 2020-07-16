@@ -22,8 +22,13 @@ class DB {
     let obj = this;
     let db = await openDB("liga-bola-db", 1, {
       upgrade(db) {
+        // Define store names
+        const STORE_NAMES = ["user"];
+
         if (!db.objectStoreNames.contains(obj.objectStoreName)) {
-          db.createObjectStore(obj.objectStoreName, { keyPath: "id" });
+          STORE_NAMES.forEach((storeName) => {
+            db.createObjectStore(storeName, { keyPath: "id" });
+          });
         }
       },
     });
@@ -50,6 +55,19 @@ class DB {
   async update(payload) {
     let tx = await this.connect();
     tx.store.put(payload);
+    return tx.complete;
+  }
+
+  async upsert(key, payload) {
+    let tx = await this.connect();
+    let item = await tx.store.get(key);
+    if (item == null) {
+      // team is undefined, create
+      tx.store.add(payload);
+    } else {
+      // update
+      tx.store.put(payload);
+    }
     return tx.complete;
   }
 }

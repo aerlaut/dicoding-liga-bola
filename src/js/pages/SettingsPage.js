@@ -39,6 +39,9 @@ export default class SettingsPage extends HTMLElement {
       },
     };
 
+    this.userConn = new UserDB();
+    this.teamConn = new TeamDB();
+
     this.innerHTML = SettingsPageLayout;
     this.followedTeamsList = this.querySelector("#followed-teams-list");
   }
@@ -109,8 +112,6 @@ export default class SettingsPage extends HTMLElement {
 
   // Get user settings
   loadUserSettings(id) {
-    // Create new UserDB connection instance
-    this.userConn = new UserDB();
     this.userConn.fetch(id).then((user) => {
       if (user == null) {
         // No user, create new user

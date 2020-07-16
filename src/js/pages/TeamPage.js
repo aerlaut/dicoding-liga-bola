@@ -1,30 +1,43 @@
 import TeamHtml from "html/layouts/team.html";
 
 import { fetchData } from "js/services/api";
+import { UserDB } from "js/services/db";
 
 export default class TeamPage extends HTMLElement {
-  constructor(team) {
+  constructor(teamId) {
     super();
-
-    let inner = TeamHtml;
-
-    inner = inner.replace("{{ team.name }}", team.name);
-    inner = inner.replace("{{ team.crestUrl }}", team.crestUrl);
-
-    this.innerHTML = inner;
-    this.data = team;
+    this.innerHTML = TeamHtml;
+    this.data = {
+      id: teamId,
+    }; // just team id for now
   }
 
   connectedCallback() {
     // Get team data
-    this.getStandings(this.team.leagueId);
-    this.getMatches(this.team.id);
-    this.getSquad(this.team.id);
+    this.getTeamDetails();
+  }
+
+  // Get team details
+  getTeamDetails() {
+    fetchData(`teams/${this.data.id}`)
+      .then((res) => res.json())
+      .then((res) => {
+        this.innerHTML = this.innerHTML.replace(`{{ team.name }}`, res.name);
+        this.innerHTML = this.innerHTML.replace(
+          `{{ team.crestUrl }}`,
+          res.crestUrl
+        );
+
+        this.getStandings();
+        this.getMatches();
+        this.getSquad();
+      })
+      .catch((err) => console.error(err));
   }
 
   // Populate league standings
-  getStandings(leagueId) {
-    fetchData(`competitions/${team.leagueId}/standings?standingType=TOTAL`)
+  getStandings() {
+    fetchData(`competitions/${this.data.leagueId}/standings?standingType=TOTAL`)
       .then((res) => res.json())
       .then((res) => {
         let table = res.standings[0].table;
@@ -78,8 +91,6 @@ export default class TeamPage extends HTMLElement {
       `;
 
         standings.forEach((s) => {
-          console.log(s);
-
           standingTable.innerHTML += `
             <td>${s.position}</td>
             <td><img src="${s.team.crestUrl}" /></td>
@@ -100,9 +111,9 @@ export default class TeamPage extends HTMLElement {
   }
 
   // Get next and previous matches
-  getMatches(teamId) {
+  getMatches() {
     // Get next 5 matches
-    fetchData(`teams/${teamId}/matches?status=SCHEDULED&limit=5`)
+    fetchData(`teams/${this.data.id}/matches?status=SCHEDULED&limit=5`)
       .then((res) => res.json())
       .then((res) => {
         let container = this.querySelector("#upcoming-matches");
@@ -139,7 +150,7 @@ export default class TeamPage extends HTMLElement {
       .catch((err) => console.log(err));
 
     // Get previous 5 matches
-    fetchData(`teams/${teamId}/matches?status=FINISHED&limit=5`)
+    fetchData(`teams/${this.data.id}/matches?status=FINISHED&limit=5`)
       .then((res) => res.json())
       .then((res) => {
         res.matches;
@@ -184,8 +195,8 @@ export default class TeamPage extends HTMLElement {
   }
 
   // Set team data
-  getSquad(teamId) {
-    fetchData(`competitions/${teamId}`)
+  getSquad() {
+    fetchData(`competitions/${this.data.id}`)
       .then((res) => res.json())
       .then((res) => {
         let squadContainer = this.querySelector("#current-squad");

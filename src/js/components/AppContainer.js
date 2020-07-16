@@ -33,9 +33,11 @@ export default class AppContainer extends HTMLElement {
     this.addEventListener(
       "navigate",
       (e) => {
+        console.log(e.detail);
+
         let pathSplit = e.detail.split("/");
-        let url = pathSplit[1];
-        let param = pathSplit[2];
+        let url = pathSplit[3];
+        let param = pathSplit[4];
 
         this.displayPage(url, param);
       },

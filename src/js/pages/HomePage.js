@@ -45,7 +45,8 @@ export default class HomePage extends HTMLElement {
         let appContainer = document.querySelector("app-container");
 
         // Push URL and manuall trigger popstate
-        let url = `team/${e.currentTarget.getAttribute("team-id")}`;
+        let url =
+          window.location + `team/${e.currentTarget.getAttribute("team-id")}`;
 
         history.pushState({}, null, url);
         appContainer.dispatchEvent(
