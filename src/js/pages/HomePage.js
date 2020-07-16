@@ -27,16 +27,31 @@ export default class HomePage extends HTMLElement {
   getTeamStandings() {
     // get league ids followed by user
     let followedTeams = Object.values(this.user.teams);
-    let standings = this.querySelector("#team-standings");
+    let teamsList = this.querySelector("#team-standings");
 
     if (followedTeams.length == 0) {
-      standings.innerHTML = `<p class="text-center">Belum ada tim yang diikuti. <a href="/settings">Ikuti tim</a></p>`;
+      teamsList.innerHTML = `<p class="text-center">Belum ada tim yang diikuti. <a href="/settings">Ikuti tim</a></p>`;
       return;
     }
 
     // Get league and append
     followedTeams.forEach((team) => {
-      standings.append(new TeamItem(team));
+      teamsList.append(new TeamItem(team));
+    });
+
+    // Add event listener
+    teamsList.querySelectorAll(".team-item").forEach((div) => {
+      div.addEventListener("click", (e) => {
+        let appContainer = document.querySelector("app-container");
+
+        // Push URL and manuall trigger popstate
+        let url = `team/${e.currentTarget.getAttribute("team-id")}`;
+
+        history.pushState({}, null, url);
+        appContainer.dispatchEvent(
+          new CustomEvent("navigate", { detail: url })
+        );
+      });
     });
   }
 

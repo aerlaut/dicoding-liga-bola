@@ -28,11 +28,11 @@ export default class TeamItem extends HTMLDivElement {
       "cursor-pointer",
       "clearfix"
     );
+
+    this.setAttribute("team-id", this.data.id);
   }
 
   connectedCallback() {
-    console.log(this.data.leagueId);
-
     // Input team standings
     fetchData(`competitions/${this.data.leagueId}/standings?standingType=TOTAL`)
       .then((res) => res.json())
