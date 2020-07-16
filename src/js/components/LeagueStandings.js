@@ -5,11 +5,17 @@ import StandingItem from "js/components/StandingItem";
 customElements.define("standing-item", StandingItem, { extends: "tr" });
 
 export default class LeagueStandings extends HTMLTableElement {
-  constructor(leagueId) {
+  constructor(input) {
     super();
 
-    // if leagueId not set, use default 'English Premier League id 2021'
-    this.leagueId = leagueId == null ? 2021 : leagueId;
+    if (Array.isArray(input)) {
+      this.type = "predefined";
+      this.standings = input;
+    } else if (!isNaN(parseInt(input))) {
+      this.type = "fetch";
+      this.leagueId = input;
+    }
+
     this.classList.add("league-standings");
     this.innerHTML = `
       <thead>
@@ -30,16 +36,25 @@ export default class LeagueStandings extends HTMLTableElement {
   }
 
   connectedCallback() {
-    // Get standings data
-    fetchData(`competitions/${this.leagueId}/standings`)
-      .then((res) => res.json())
-      .then((res) => {
-        let tbody = this.querySelector("tbody");
-
-        // Load standings
-        res.standings[0].table.slice(0, 5).forEach((d) => {
-          tbody.append(new StandingItem(d));
-        });
+    if (this.type == "predefined") {
+      let tbody = this.querySelector("tbody");
+      this.standings.forEach((d) => {
+        tbody.append(new StandingItem(d));
       });
+    }
+
+    if (this.type == "fetch") {
+      // Get standings data
+      fetchData(`competitions/${this.leagueId}/standings`)
+        .then((res) => res.json())
+        .then((res) => {
+          let tbody = this.querySelector("tbody");
+
+          // Load standings
+          res.standings[0].table.forEach((d) => {
+            tbody.append(new StandingItem(d));
+          });
+        });
+    }
   }
 }

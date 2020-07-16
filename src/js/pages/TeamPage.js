@@ -1,7 +1,14 @@
 import TeamHtml from "html/layouts/team.html";
+import LeagueStandings from "js/components/LeagueStandings";
 
 import { fetchData } from "js/services/api";
 import { UserDB } from "js/services/db";
+
+// if (!customElements.get("league-standings")) {
+customElements.define("league-standings", LeagueStandings, {
+  extends: "table",
+});
+// }
 
 export default class TeamPage extends HTMLElement {
   constructor(teamId) {
@@ -19,18 +26,25 @@ export default class TeamPage extends HTMLElement {
 
   // Get team details
   getTeamDetails() {
-    fetchData(`teams/${this.data.id}`)
-      .then((res) => res.json())
-      .then((res) => {
-        this.innerHTML = this.innerHTML.replace(`{{ team.name }}`, res.name);
+    // Get team from user details
+    this.userConn = new UserDB();
+    this.userConn
+      .fetch(1)
+      .then((user) => {
+        this.data = user.teams[this.data.id];
+
+        this.innerHTML = this.innerHTML.replace(
+          `{{ team.name }}`,
+          this.data.name
+        );
         this.innerHTML = this.innerHTML.replace(
           `{{ team.crestUrl }}`,
-          res.crestUrl
+          this.data.crestUrl
         );
 
-        this.getStandings();
+        // this.getStandings();
         this.getMatches();
-        this.getSquad();
+        // this.getSquad();
       })
       .catch((err) => console.error(err));
   }
@@ -45,7 +59,7 @@ export default class TeamPage extends HTMLElement {
         // Search positions in table
         let position = null;
         table.some((team) => {
-          if (team.id == this.data.id) {
+          if (team.team.id == this.data.id) {
             position = team.position;
             return true;
           }
@@ -59,53 +73,29 @@ export default class TeamPage extends HTMLElement {
         } else {
           if (position < 3) {
             // Get top 5
-            standings = table[(0, 5)];
+            standings = table.slice(0, 5);
           } else if (table.length - position < 3) {
             // Get  bottom 5
 
             standings = table[table.length - 5];
           } else if (position > 3) {
-            standings = table[(position - 2, position + 2)];
+            standings = table.slice(position - 2, position + 3);
           }
         }
 
         // Show standing table
         let standingTable = this.querySelector("#standing-table");
 
-        standingTable.innerHTML = `
-          <thead>
-          <tr>
-            <th>Pos</th>
-            <th></th>
-            <th>Tim</th>
-            <th>P</th>
-            <th>W</th>
-            <th>D</th>
-            <th>L</th>
-            <th>GF</th>
-            <th>GA</th>
-            <th>Diff</th>
-          </tr>
-        </thead>
-        <tbody>
-      `;
+        // Get league and append
+        standingTable.classList.add(
+          "col",
+          "s12",
+          "standings-container",
+          "card-panel",
+          "p-4"
+        );
 
-        standings.forEach((s) => {
-          standingTable.innerHTML += `
-            <td>${s.position}</td>
-            <td><img src="${s.team.crestUrl}" /></td>
-            <td class="title">${s.team.name}</td>
-            <td class="mr-4">${s.playedGames}</td>
-            <td class="mr-4">${s.won}</td>
-            <td class="mr-4">${s.draw}</td>
-            <td class="mr-4">${s.lost}</td>
-            <td class="mr-4">${s.goalsFor}</td>
-            <td class="mr-4">${s.goalsAgainst}</td>
-            <td class="mr-4">${s.goalDifference}</td>
-          `;
-        });
-
-        standingTable.innerHTML += `</tbody>`;
+        standingTable.append(new LeagueStandings(standings));
       })
       .catch((err) => console.log(err));
   }
@@ -153,7 +143,7 @@ export default class TeamPage extends HTMLElement {
     fetchData(`teams/${this.data.id}/matches?status=FINISHED&limit=5`)
       .then((res) => res.json())
       .then((res) => {
-        res.matches;
+        console.log(res);
 
         let container = this.querySelector("#previous-matches");
 
@@ -171,6 +161,8 @@ export default class TeamPage extends HTMLElement {
         `;
 
         res.matches.forEach((m) => {
+          console.log(m);
+
           let winClass =
             m.score.winner == "HOME_TEAM"
               ? "teal lighten-3"
@@ -196,7 +188,7 @@ export default class TeamPage extends HTMLElement {
 
   // Set team data
   getSquad() {
-    fetchData(`competitions/${this.data.id}`)
+    fetchData(`teams/${this.data.id}`)
       .then((res) => res.json())
       .then((res) => {
         let squadContainer = this.querySelector("#current-squad");
