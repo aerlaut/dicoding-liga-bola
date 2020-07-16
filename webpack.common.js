@@ -8,6 +8,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "main.js",
+    publicPath: "/",
   },
   resolve: {
     alias: {
@@ -36,7 +37,6 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "./src/template.html",
-      filename: "index.html",
     }),
   ],
   devtool: "inline-source-maps",

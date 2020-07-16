@@ -19,6 +19,7 @@ export default class AppContainer extends HTMLElement {
 
     if (url != "") {
       this.page = url;
+      this.param = param;
     } else {
       this.page = "home";
     }
@@ -26,23 +27,24 @@ export default class AppContainer extends HTMLElement {
 
   connectedCallback() {
     // if page is not set, load dashboard
-    this.displayPage(this.page);
+    this.displayPage(this.page, this.param);
 
     // Handle page changes
     this.addEventListener(
       "navigate",
       (e) => {
-        let splits = e.detail.split("/");
-        let page = splits[splits.length - 1];
+        let pathSplit = e.detail.split("/");
+        let url = pathSplit[1];
+        let param = pathSplit[2];
 
-        this.displayPage(page);
+        this.displayPage(url, param);
       },
       false
     );
   }
 
   // Route according to the page
-  displayPage(route) {
+  displayPage(route, param) {
     this.innerHTML = "";
 
     // Switch route
@@ -52,7 +54,7 @@ export default class AppContainer extends HTMLElement {
         page = new SettingsPage();
         break;
       case "team":
-        page = new TeamPage();
+        page = new TeamPage(param);
         break;
       case "home":
         page = new HomePage();
