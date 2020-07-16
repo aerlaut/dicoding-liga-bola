@@ -106,9 +106,13 @@ export default class TeamPage extends HTMLElement {
     fetchData(`teams/${this.data.id}/matches?status=SCHEDULED&limit=5`)
       .then((res) => res.json())
       .then((res) => {
-        let container = this.querySelector("#upcoming-matches");
+        let inner = "";
 
-        container.innerHTML = `
+        if (res.count == 0) {
+          inner = '<div class="text-center">Belum ada match berikutnya</div>';
+        } else {
+          inner = `
+          <table>
             <thead>
             <tr>
               <th>Home</th>
@@ -122,8 +126,9 @@ export default class TeamPage extends HTMLElement {
           <tbody>
         `;
 
-        res.matches.forEach((m) => {
-          container.innerHTML += `
+          res.matches.forEach((m) => {
+            console.log(m);
+            inner += `
             <tr>
               <td><a class="team-button" team-id=${m.HomeTeam.id}>${m.HomeTeam.name}</a></td>
               <td>VS</td>
@@ -133,9 +138,12 @@ export default class TeamPage extends HTMLElement {
               <td><button class="btn">+</button></td>
               </tr>
           `;
-        });
+          });
 
-        container.innerHTML = `</tbody>`;
+          inner += `</tbody></table>`;
+        }
+
+        this.querySelector("#upcoming-matches").innerHTML = inner;
       })
       .catch((err) => console.log(err));
 
@@ -143,11 +151,8 @@ export default class TeamPage extends HTMLElement {
     fetchData(`teams/${this.data.id}/matches?status=FINISHED&limit=5`)
       .then((res) => res.json())
       .then((res) => {
-        console.log(res);
-
-        let container = this.querySelector("#previous-matches");
-
-        container.innerHTML = `
+        let inner = `
+          <table>
             <thead>
             <tr>
               <th>Home</th>
@@ -161,8 +166,6 @@ export default class TeamPage extends HTMLElement {
         `;
 
         res.matches.forEach((m) => {
-          console.log(m);
-
           let winClass =
             m.score.winner == "HOME_TEAM"
               ? "teal lighten-3"
@@ -170,9 +173,9 @@ export default class TeamPage extends HTMLElement {
               ? "red lighten-3"
               : "yellow lighten-3";
 
-          container.innerHTML += `
+          inner += `
             <tr class="${winClass}">
-              <td><a class="team-button" team-id=${m.HomeTeam.id}>${m.HomeTeam.name}</a> ${m.score.fullTime.homeTeam}</td>
+              <td><a class="team-button" team-id=${m.homeTeam.id}>${m.homeTeam.name}</a> ${m.score.fullTime.homeTeam}</td>
               <td>VS</td>
               <td>${m.score.fullTime.awayTeam} <a class="team-button" team-id=${m.awayTeam.id}>${m.awayTeam.name}</a></td>
               <td>${m.competition.name}</td>
@@ -181,7 +184,7 @@ export default class TeamPage extends HTMLElement {
           `;
         });
 
-        container.innerHTML = `</tbody>`;
+        this.querySelector("#previous-matches").innerHTML = inner;
       })
       .catch((err) => console.log(err));
   }
